@@ -127,13 +127,6 @@ public class VideoActivity extends AppCompatActivity implements CameraPresenter.
                     rlRemoteGroup.removeAllViews();
                     rlRemoteGroup.addView(arTextureView);
                     rtcEngine.setRemoteVideoRenderer(uid,arTextureView);
-
-//                    //使用SDK渲染
-//                    TextureView remoteVideoView = RtcEngine.CreateRendererView(VideoActivity.this);
-//                    rlRemoteGroup.removeAllViews();
-//                    rlRemoteGroup.addView(remoteVideoView);
-//                    rtcEngine.setupRemoteVideo(new VideoCanvas(remoteVideoView, Constants.RENDER_MODE_FIT,uid));
-
                 }
             });
         }
