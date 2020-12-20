@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="#1c1c1c"
+    android:layout_height="match_parent"
+    tools:context="org.ar.sample_custom_video.VideoActivity">
+
+
+
+
+
+    <RelativeLayout
+        android:id="@+id/rl_remote"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </RelativeLayout>
+
+    <SurfaceView
+        android:id="@+id/sv_local"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/dp_12"
+        android:layout_width="@dimen/dp_150"
+        android:layout_height="@dimen/dp_200">
+    </SurfaceView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dp_50"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/ibtn_audio"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:onClick="MuteLocalAudio"
+            android:src="@drawable/selector_audio_manager"
+            android:layout_height="wrap_content">
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/ibtn_join"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:onClick="join"
+            android:src="@drawable/join"></ImageButton>
+        <ImageButton
+            android:id="@+id/ibtn_video"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:onClick="MuteLocalVideo"
+            android:src="@drawable/selector_video_manager"
+            android:layout_height="wrap_content">
+        </ImageButton>
+
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>
