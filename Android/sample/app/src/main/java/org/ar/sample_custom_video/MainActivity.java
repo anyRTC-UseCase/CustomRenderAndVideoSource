@@ -12,8 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 
 public class MainActivity extends AppCompatActivity {
 
