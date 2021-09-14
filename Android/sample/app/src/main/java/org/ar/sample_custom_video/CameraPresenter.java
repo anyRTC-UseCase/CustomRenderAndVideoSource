@@ -34,8 +34,8 @@ public class CameraPresenter implements Camera.PreviewCallback {
 
     //自定义回调
     private CameraCallBack mCameraCallBack;
-    //手机宽和高
-    private int screenWidth, screenHeight;
+    //宽和高
+    private int previewWidth=640, previewHeight=480;
 
     private  Camera.Size previewSize;
 
@@ -73,10 +73,6 @@ public class CameraPresenter implements Camera.PreviewCallback {
         mSurfaceHolder = mSurfaceView.getHolder();
         DisplayMetrics dm = new DisplayMetrics();
         mAppCompatActivity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-        //获取宽高像素
-        screenWidth = dm.widthPixels;
-        screenHeight = dm.heightPixels;
-        Log.d("sssd-手机宽高尺寸:",screenWidth +"*"+screenHeight);
         init();
     }
 
@@ -163,12 +159,8 @@ public class CameraPresenter implements Camera.PreviewCallback {
             mParameters = camera.getParameters();
             //设置预览格式
             mParameters.setPreviewFormat(ImageFormat.NV21);
-
-            if(isFull){
-                setPreviewSize(screenWidth,screenHeight);
-            } else {
-                setPreviewSize(mSurfaceView.getMeasuredWidth(),mSurfaceView.getMeasuredHeight());
-            }
+            mParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+            setPreviewSize(previewWidth,previewHeight);
 
             //给相机设置参数
             mCamera.setParameters(mParameters);
@@ -268,8 +260,8 @@ public class CameraPresenter implements Camera.PreviewCallback {
      */
     private void getOpyimalPreviewSize(){
         List<Camera.Size> sizes = mParameters.getSupportedPreviewSizes();
-        int w = screenWidth;
-        int h = screenHeight;
+        int w = previewWidth;
+        int h = previewHeight;
         final double ASPECT_TOLERANCE = 0.1;
         double targetRatio = (double) w / h;
         if (sizes == null) return;

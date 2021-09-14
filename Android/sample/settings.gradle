@@ -1,2 +1,3 @@
+include ':x264encoder'
 include ':app'
 rootProject.name = "sample-custom-videosource"

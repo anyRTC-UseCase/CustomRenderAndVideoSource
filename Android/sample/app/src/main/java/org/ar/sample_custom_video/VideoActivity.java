@@ -12,14 +12,8 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 
-import org.ar.rtc.Constants;
 import org.ar.rtc.IRtcEngineEventHandler;
 import org.ar.rtc.RtcEngine;
-import org.ar.rtc.mediaio.ARSurfaceView;
-import org.ar.rtc.mediaio.ARTextureView;
-import org.ar.rtc.mediaio.IVideoFrameConsumer;
-import org.ar.rtc.mediaio.IVideoSource;
-import org.ar.rtc.mediaio.MediaIO;
 import org.ar.rtc.video.ARVideoFrame;
 import org.ar.rtc.video.VideoCanvas;
 
@@ -43,7 +37,21 @@ public class VideoActivity extends AppCompatActivity implements CameraPresenter.
 
     private boolean isJoin = false;
 
-    private IVideoFrameConsumer mConsumer;
+    private int width = 640;
+
+    private int height = 480;
+
+    private int fps = 20;
+
+    private int bitrate = 90000;
+
+
+
+    private int timespan = 90000 / fps;
+
+    private long time;
+
+
 
 
     @Override
@@ -63,9 +71,12 @@ public class VideoActivity extends AppCompatActivity implements CameraPresenter.
 
     private void initSDK(){
         try {
+            cameraPresenter = new CameraPresenter(VideoActivity.this,sv_local);
+            cameraPresenter.setFrontOrBack(Camera.CameraInfo.CAMERA_FACING_FRONT);
+            cameraPresenter.setCameraCallBack(VideoActivity.this::onPreviewFrame);
             rtcEngine = RtcEngine.create(this, BuildConfig.APPID,engineEventHandler);
+            rtcEngine.enableVideo();
             rtcEngine.setExternalVideoSource(true,true,true);//设置外部视频源
-            rtcEngine.setVideoSource(new VideoSource());//设置外部视频源
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,7 +94,6 @@ public class VideoActivity extends AppCompatActivity implements CameraPresenter.
 
 
 
-
     IRtcEngineEventHandler engineEventHandler = new IRtcEngineEventHandler() {
         @Override
         public void onJoinChannelSuccess(String channel, String uid, int elapsed) {
@@ -92,6 +102,16 @@ public class VideoActivity extends AppCompatActivity implements CameraPresenter.
                 @Override
                 public void run() {
                     setTitle("加入成功");
+                }
+            });
+        }
+
+        @Override
+        public void onLocalVideoStats(LocalVideoStats stats) {
+            super.onLocalVideoStats(stats);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
                 }
             });
         }
@@ -119,14 +139,10 @@ public class VideoActivity extends AppCompatActivity implements CameraPresenter.
             VideoActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    ARTextureView arTextureView =new ARTextureView(VideoActivity.this);
-                    arTextureView.init(null);
-                    arTextureView.setBufferType(MediaIO.BufferType.BYTE_ARRAY);
-                    arTextureView.setPixelFormat(MediaIO.PixelFormat.I420);
-                    arTextureView.setMirror(true);
+                    TextureView arTextureView =RtcEngine.CreateRendererView(VideoActivity.this);
                     rlRemoteGroup.removeAllViews();
                     rlRemoteGroup.addView(arTextureView);
-                    rtcEngine.setRemoteVideoRenderer(uid,arTextureView);
+                    rtcEngine.setupRemoteVideo(new VideoCanvas(arTextureView,1,uid));
                 }
             });
         }
@@ -146,11 +162,19 @@ public class VideoActivity extends AppCompatActivity implements CameraPresenter.
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        if (mConsumer!=null&&isJoin){//将NV21数据塞进SDK
-           // byte[] data, int format, int width, int height, int rotation, long timestamp
-            mConsumer.consumeByteArrayFrame(data, ARVideoFrame.FORMAT_NV21,cameraPresenter.getPreviewSize().width,cameraPresenter.getPreviewSize().height,270,System.currentTimeMillis());
+        if (isJoin){
+            ARVideoFrame arVideoFrame = new ARVideoFrame();
+            arVideoFrame.format=ARVideoFrame.FORMAT_NV12;
+            arVideoFrame.timeStamp=System.currentTimeMillis();
+            arVideoFrame.stride=640;
+            arVideoFrame.height=480;
+            arVideoFrame.rotation=270;
+            arVideoFrame.buf=data;
+            arVideoFrame.bufType=ARVideoFrame.BUFFER_TYPE_ARRAY;
+            rtcEngine.pushExternalVideoFrame(arVideoFrame);
         }
     }
+
 
     public void join(View view) {
         if (!isJoin){
@@ -176,45 +200,6 @@ public class VideoActivity extends AppCompatActivity implements CameraPresenter.
     }
 
 
-    public class VideoSource implements IVideoSource {
-
-        //初始化成功后 会返回一个IVideoFrameConsumer对象 通过这个将视频数据塞进SDK
-        //可以在这个回调中做一些准备工作，例如打开摄像头
-        @Override
-        public boolean onInitialize(IVideoFrameConsumer consumer) {
-            Log.d("VideoSource","onInitialize");
-            //开启相机
-            mConsumer = consumer;
-            cameraPresenter = new CameraPresenter(VideoActivity.this,sv_local);
-            cameraPresenter.setFrontOrBack(Camera.CameraInfo.CAMERA_FACING_FRONT);
-            cameraPresenter.setCameraCallBack(VideoActivity.this::onPreviewFrame);
-            return true;
-        }
-
-
-        @Override
-        public boolean onStart() {
-            Log.d("VideoSource","onStart");
-            return true;
-        }
-
-        @Override
-        public void onStop() {
-            Log.d("VideoSource","onStop");
-        }
-
-        @Override
-        public void onDispose() {//关闭相机
-            Log.d("VideoSource","onDispose");
-            cameraPresenter.releaseCamera();
-            mConsumer=null;
-        }
-
-        @Override
-        public int getBufferType() {
-            return MediaIO.BufferType.BYTE_ARRAY.intValue();
-        }
-    }
 
     @Override
     protected void onDestroy() {
