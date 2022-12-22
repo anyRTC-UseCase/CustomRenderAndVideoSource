@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import org.ar.rtc.BuildConfig;
 import org.ar.rtc.IRtcEngineEventHandler;
 import org.ar.rtc.RtcEngine;
 import org.ar.rtc.mediaio.ARTextureView;
@@ -60,7 +61,7 @@ public class VideoActivity extends AppCompatActivity implements CameraPresenter.
             cameraPresenter = new CameraPresenter(VideoActivity.this,sv_local);
             cameraPresenter.setFrontOrBack(Camera.CameraInfo.CAMERA_FACING_FRONT);
             cameraPresenter.setCameraCallBack(VideoActivity.this::onPreviewFrame);
-            rtcEngine = RtcEngine.create(this,BuildConfig.APPID,engineEventHandler);
+            rtcEngine = RtcEngine.create(this, BuildConfig.APPID,engineEventHandler);
             rtcEngine.enableVideo();
             rtcEngine.setVideoSource(new VideoSource());//设置外部视频源
         } catch (Exception e) {

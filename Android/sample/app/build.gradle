@@ -1,16 +1,18 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "30.0.0"
+    compileSdk 30
+
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
     defaultConfig {
         applicationId "org.ar.sample_custom_video"
-        minSdkVersion 19
-        targetSdkVersion 28
+        minSdk 19
+        targetSdk 30
         versionCode 1
         versionName "1.0"
 
@@ -19,13 +21,13 @@ android {
 
     buildTypes {
         release {
-            buildConfigField("String", "APPID", '"YOUR APPID"')
+            buildConfigField("String", "APPID", '"APPID"')
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
         debug {
-            buildConfigField("String", "APPID", '"YOUR APPID"')
+            buildConfigField("String", "APPID", '"APPID"')
         }
     }
 }
@@ -37,5 +39,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation 'io.anyrtc:rtc:4.2.2.7'
+    implementation 'io.anyrtc:rtc:4.3.1.1'
 }
